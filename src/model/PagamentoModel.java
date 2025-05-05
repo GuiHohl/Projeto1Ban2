@@ -7,7 +7,7 @@ public class PagamentoModel {
     private int idPagamento;
     private int idComanda;
     private BigDecimal valor;
-    private String metodoPagamento;
+    private int idMetodoPagamento;
     private Timestamp dataPagamento;
 
     public int getIdPagamento() {
@@ -34,12 +34,12 @@ public class PagamentoModel {
         this.valor = valor;
     }
 
-    public String getMetodoPagamento() {
-        return metodoPagamento;
+    public int getIdMetodoPagamento() {
+        return idMetodoPagamento;
     }
 
-    public void setMetodoPagamento(String metodoPagamento) {
-        this.metodoPagamento = metodoPagamento;
+    public void setIdMetodoPagamento(int idMetodoPagamento) {
+        this.idMetodoPagamento = idMetodoPagamento;
     }
 
     public Timestamp getDataPagamento() {

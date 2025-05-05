@@ -9,7 +9,6 @@ public class RelatorioFuncionariosComMaisComandasDTO {
         this.totalComandas = totalComandas;
     }
 
-    // Getters e Setters
     public String getNomeFuncionario() {
         return nomeFuncionario;
     }

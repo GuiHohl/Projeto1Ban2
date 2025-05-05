@@ -39,16 +39,16 @@ public class CargoMenu {
                         cargoService.excluirCargo();
                         break;
                     case 0:
-                        System.out.println("👋 Saindo do menu de cargos...");
+                        System.out.println("Saindo do menu de cargos...");
                         break;
                     default:
-                        System.out.println("❌ Opção inválida, tente novamente.");
+                        System.out.println("Opção inválida, tente novamente.");
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("🚨 Erro ao acessar o menu de cargos:");
+            System.out.println("Erro ao acessar o menu de cargos:");
             e.printStackTrace();
         }
     }

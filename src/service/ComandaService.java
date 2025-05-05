@@ -1,15 +1,16 @@
 package service;
 
-
-
 import dao.ComandaDAO;
 import dao.FuncionarioDAO;
+import dao.StatusComandaDAO;
 import model.ComandaModel;
 import model.FuncionarioModel;
+import model.StatusComandaModel;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,10 +18,12 @@ public class ComandaService {
 
     private final ComandaDAO comandaDAO;
     private final FuncionarioDAO funcionarioDAO;
+    private final StatusComandaDAO statusDAO;
 
     public ComandaService(Connection connection) {
         this.comandaDAO = new ComandaDAO(connection);
         this.funcionarioDAO = new FuncionarioDAO(connection);
+        this.statusDAO = new StatusComandaDAO(connection);
     }
 
     public void criarComanda() {
@@ -35,8 +38,9 @@ public class ComandaService {
             ComandaModel comanda = new ComandaModel();
             comanda.setIdFuncionario(funcionario.getIdFuncionario());
             comanda.setDataAbertura(Timestamp.valueOf(LocalDateTime.now()));
-            comanda.setStatusComanda("Aberta");
             comanda.setNumMesa(numMesa);
+
+            comanda.setIdStatusComanda(1);
 
             comandaDAO.create(comanda);
             System.out.println("Comanda aberta com sucesso!");
@@ -49,14 +53,25 @@ public class ComandaService {
     public void listarComandas() {
         try {
             List<ComandaModel> lista = comandaDAO.findAll();
+            List<StatusComandaModel> statusList = statusDAO.findAll();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
             System.out.println("\nComandas:");
             for (ComandaModel c : lista) {
                 FuncionarioModel f = funcionarioDAO.read(c.getIdFuncionario());
                 String nomeFuncionario = (f != null) ? f.getNome() : "Desconhecido";
 
+                String nomeStatus = statusList.stream()
+                        .filter(s -> s.getId() == c.getIdStatusComanda())
+                        .map(StatusComandaModel::getNome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+
+                String dataFormatada = c.getDataAbertura().toLocalDateTime().format(formatter);
+
                 System.out.printf("ID: %d | Mesa: %d | Aberta por: %s | Status: %s | Abertura: %s%n",
                         c.getIdComanda(), c.getNumMesa(), nomeFuncionario,
-                        c.getStatusComanda(), c.getDataAbertura());
+                        nomeStatus, dataFormatada);
             }
         } catch (Exception e) {
             System.out.println("Erro ao listar comandas:");
@@ -68,28 +83,32 @@ public class ComandaService {
         Scanner scanner = new Scanner(System.in);
         try {
             List<ComandaModel> lista = comandaDAO.findAll();
-            if (lista.isEmpty()) {
-                System.out.println("Nenhuma comanda encontrada.");
+            List<ComandaModel> abertas = lista.stream()
+                    .filter(c -> c.getIdStatusComanda() == 1)
+                    .toList();
+
+            if (abertas.isEmpty()) {
+                System.out.println("Nenhuma comanda em aberto encontrada.");
                 return;
             }
 
             System.out.println("\nSelecione a comanda para cancelar:");
-            for (int i = 0; i < lista.size(); i++) {
-                ComandaModel c = lista.get(i);
-                System.out.printf("%d - Comanda #%d (Mesa %d, Status: %s)%n",
-                        i + 1, c.getIdComanda(), c.getNumMesa(), c.getStatusComanda());
+            for (int i = 0; i < abertas.size(); i++) {
+                ComandaModel c = abertas.get(i);
+                System.out.printf("%d - Comanda #%d (Mesa %d)%n",
+                        i + 1, c.getIdComanda(), c.getNumMesa());
             }
 
             System.out.print("Digite o número da comanda: ");
             int escolha = Integer.parseInt(scanner.nextLine());
 
-            if (escolha < 1 || escolha > lista.size()) {
+            if (escolha < 1 || escolha > abertas.size()) {
                 System.out.println("Opção inválida.");
                 return;
             }
 
-            ComandaModel selecionada = lista.get(escolha - 1);
-            selecionada.setStatusComanda("Cancelada");
+            ComandaModel selecionada = abertas.get(escolha - 1);
+            selecionada.setIdStatusComanda(3);
 
             comandaDAO.update(selecionada);
             System.out.println("Comanda #" + selecionada.getIdComanda() + " foi cancelada.");

@@ -1,12 +1,14 @@
 package service;
 
 import dao.FuncionarioDAO;
+import dao.MetodoPagamentoDAO;
 import dao.PagamentoDAO;
 import dao.ProdutoDAO;
 import dto.RelatorioFaturamentoDiarioDTO;
 import dto.RelatorioFuncionariosComMaisComandasDTO;
 import dto.RelatorioProdutosMaisVendidosDTO;
 import dto.RelatorioVendasPorMetodoPagamentoDTO;
+import model.MetodoPagamentoModel;
 
 import java.sql.Connection;
 import java.util.List;
@@ -16,11 +18,13 @@ public class RelatorioService {
     private final PagamentoDAO pagamentoDAO;
     private final ProdutoDAO produtoDAO;
     private final FuncionarioDAO funcionarioDAO;
+    private final MetodoPagamentoDAO metodoPagamentoDAO;
 
     public RelatorioService(Connection connection) {
         this.pagamentoDAO = new PagamentoDAO(connection);
         this.produtoDAO = new ProdutoDAO(connection);
         this.funcionarioDAO = new FuncionarioDAO(connection);
+        this.metodoPagamentoDAO = new MetodoPagamentoDAO(connection);
     }
 
     public void relatorioFaturamentoDiario() {
@@ -39,7 +43,6 @@ public class RelatorioService {
         }
     }
 
-    // Relatório de Produtos Mais Vendidos
     public void relatorioProdutosMaisVendidos() {
         try {
             List<RelatorioProdutosMaisVendidosDTO> relatorio = produtoDAO.findProdutosMaisVendidos();
@@ -59,12 +62,22 @@ public class RelatorioService {
     public void relatorioVendasPorMetodoPagamento() {
         try {
             List<RelatorioVendasPorMetodoPagamentoDTO> relatorio = pagamentoDAO.findVendasPorMetodo();
+            List<MetodoPagamentoModel> metodos = metodoPagamentoDAO.findAll();
 
             System.out.println("\nRelatório de Vendas por Método de Pagamento:");
-            System.out.printf("%-20s %-15s %-15s%n", "Método", "Total Pagamentos", "Total Vendas");
+            System.out.printf("%-20s %-15s %-15s%n", "Método", "Total Pagamentos", "Total Faturamento");
 
             for (RelatorioVendasPorMetodoPagamentoDTO dto : relatorio) {
-                System.out.println(dto);
+                String nomeMetodo = metodos.stream()
+                        .filter(m -> String.valueOf(m.getId()).equals(dto.getMetodoPagamento()))
+                        .map(MetodoPagamentoModel::getNome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+
+                System.out.printf("%-20s %-15d R$ %-13.2f%n",
+                        nomeMetodo,
+                        dto.getTotalPagamentos(),
+                        dto.getTotalVendas());
             }
         } catch (Exception e) {
             System.out.println("Erro ao gerar relatório de vendas por método de pagamento:");

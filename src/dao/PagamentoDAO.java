@@ -16,11 +16,11 @@ public class PagamentoDAO {
     }
 
     public void create(PagamentoModel pagamento) throws SQLException {
-        String sql = "INSERT INTO pagamentos (id_comanda, valor, metodo_pagamento, data_pagamento) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO pagamentos (id_comanda, valor, id_metodo_pagamento, data_pagamento) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, pagamento.getIdComanda());
             stmt.setBigDecimal(2, pagamento.getValor());
-            stmt.setString(3, pagamento.getMetodoPagamento());
+            stmt.setInt(3, pagamento.getIdMetodoPagamento());
             stmt.setTimestamp(4, pagamento.getDataPagamento());
             stmt.executeUpdate();
         }
@@ -36,7 +36,7 @@ public class PagamentoDAO {
                 pagamento.setIdPagamento(rs.getInt("id_pagamento"));
                 pagamento.setIdComanda(rs.getInt("id_comanda"));
                 pagamento.setValor(rs.getBigDecimal("valor"));
-                pagamento.setMetodoPagamento(rs.getString("metodo_pagamento"));
+                pagamento.setIdMetodoPagamento(rs.getInt("id_metodo_pagamento"));
                 pagamento.setDataPagamento(rs.getTimestamp("data_pagamento"));
                 return pagamento;
             }
@@ -45,11 +45,11 @@ public class PagamentoDAO {
     }
 
     public void update(PagamentoModel pagamento) throws SQLException {
-        String sql = "UPDATE pagamentos SET id_comanda = ?, valor = ?, metodo_pagamento = ?, data_pagamento = ? WHERE id_pagamento = ?";
+        String sql = "UPDATE pagamentos SET id_comanda = ?, valor = ?, id_metodo_pagamento = ?, data_pagamento = ? WHERE id_pagamento = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, pagamento.getIdComanda());
             stmt.setBigDecimal(2, pagamento.getValor());
-            stmt.setString(3, pagamento.getMetodoPagamento());
+            stmt.setInt(3, pagamento.getIdMetodoPagamento());
             stmt.setTimestamp(4, pagamento.getDataPagamento());
             stmt.setInt(5, pagamento.getIdPagamento());
             stmt.executeUpdate();
@@ -76,7 +76,7 @@ public class PagamentoDAO {
                 p.setIdPagamento(rs.getInt("id_pagamento"));
                 p.setIdComanda(rs.getInt("id_comanda"));
                 p.setValor(rs.getBigDecimal("valor"));
-                p.setMetodoPagamento(rs.getString("metodo_pagamento"));
+                p.setIdMetodoPagamento(rs.getInt("id_metodo_pagamento"));
                 p.setDataPagamento(rs.getTimestamp("data_pagamento"));
                 lista.add(p);
             }
@@ -101,9 +101,9 @@ public class PagamentoDAO {
 
             while (rs.next()) {
                 RelatorioFaturamentoDiarioDTO dto = new RelatorioFaturamentoDiarioDTO(
-                    rs.getString("data_pagamento"),
-                    rs.getInt("total_comandas"),
-                    rs.getBigDecimal("faturamento_total")
+                        rs.getString("data_pagamento"),
+                        rs.getInt("total_comandas"),
+                        rs.getBigDecimal("faturamento_total")
                 );
                 lista.add(dto);
             }
@@ -112,13 +112,12 @@ public class PagamentoDAO {
         return lista;
     }
 
-
     public List<RelatorioVendasPorMetodoPagamentoDTO> findVendasPorMetodo() throws Exception {
         List<RelatorioVendasPorMetodoPagamentoDTO> lista = new ArrayList<>();
         String sql = """
-            SELECT metodo_pagamento, COUNT(*) AS total_pagamentos, SUM(valor) AS total_vendas
+            SELECT id_metodo_pagamento, COUNT(*) AS total_pagamentos, SUM(valor) AS total_vendas
             FROM pagamentos
-            GROUP BY metodo_pagamento
+            GROUP BY id_metodo_pagamento
             ORDER BY total_vendas DESC;
         """;
 
@@ -127,9 +126,9 @@ public class PagamentoDAO {
 
             while (rs.next()) {
                 RelatorioVendasPorMetodoPagamentoDTO dto = new RelatorioVendasPorMetodoPagamentoDTO(
-                    rs.getString("metodo_pagamento"),
-                    rs.getInt("total_pagamentos"),
-                    rs.getBigDecimal("total_vendas")
+                        String.valueOf(rs.getInt("id_metodo_pagamento")),
+                        rs.getInt("total_pagamentos"),
+                        rs.getBigDecimal("total_vendas")
                 );
                 lista.add(dto);
             }

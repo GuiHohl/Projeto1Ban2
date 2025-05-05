@@ -31,19 +31,19 @@ public class RelatorioMenu {
                         case 2 -> service.relatorioProdutosMaisVendidos();
                         case 3 -> service.relatorioVendasPorMetodoPagamento();
                         case 4 -> service.relatorioFuncionariosComMaisComandas();
-                        case 0 -> System.out.println("🔙 Voltando...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Voltando...");
+                        default -> System.out.println("Opção inválida.");
                     }
 
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida.");
+                    System.out.println("Entrada inválida.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("❌ Erro no menu de relatórios:");
+            System.out.println("Erro no menu de relatórios:");
             e.printStackTrace();
         }
     }

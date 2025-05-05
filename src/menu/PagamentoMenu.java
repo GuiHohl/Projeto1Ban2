@@ -27,19 +27,19 @@ public class PagamentoMenu {
                     switch (opcao) {
                         case 1 -> service.listarPagamentos();
                         case 2 -> service.registrarPagamento();
-                        case 0 -> System.out.println("🔙 Voltando ao menu principal...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Voltando ao menu principal...");
+                        default -> System.out.println("Opção inválida.");
                     }
 
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida.");
+                    System.out.println("Entrada inválida.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("❌ Erro no menu de pagamentos:");
+            System.out.println("Erro no menu de pagamentos:");
             e.printStackTrace();
         }
     }

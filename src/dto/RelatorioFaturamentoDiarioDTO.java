@@ -13,7 +13,6 @@ public class RelatorioFaturamentoDiarioDTO {
         this.faturamentoTotal = faturamentoTotal;
     }
 
-    // Getters e Setters
     public String getDataPagamento() {
         return dataPagamento;
     }

@@ -27,24 +27,24 @@ public class PedidoMenu {
                     opcao = Integer.parseInt(scanner.nextLine());
 
                     switch (opcao) {
-                        case 1 -> service.listarPedidosDetalhado();
+                        case 1 -> service.listarPedidos();
                         case 2 -> service.criarPedido();
                         case 3 -> service.alterarStatusPedido();
                         case 4 -> service.excluirPedido();
-                        case 0 -> System.out.println("🔙 Voltando...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Voltando...");
+                        default -> System.out.println("Opção inválida.");
                     }
 
 
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida.");
+                    System.out.println("Entrada inválida.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("❌ Erro no menu de pedidos:");
+            System.out.println("Erro no menu de pedidos:");
             e.printStackTrace();
         }
     }

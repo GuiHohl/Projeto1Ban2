@@ -31,19 +31,19 @@ public class AdicionalMenu {
                         case 2 -> service.cadastrarAdicional();
                         case 3 -> service.editarAdicional();
                         case 4 -> service.excluirAdicional();
-                        case 0 -> System.out.println("🔙 Voltando...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Voltando...");
+                        default -> System.out.println("Opção inválida.");
                     }
 
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida.");
+                    System.out.println("Entrada inválida.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("❌ Erro no menu de adicionais:");
+            System.out.println("Erro no menu de adicionais:");
             e.printStackTrace();
         }
     }

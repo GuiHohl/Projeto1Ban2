@@ -31,19 +31,19 @@ public class FuncionarioMenu {
                         case 2 -> service.criarFuncionarioViaConsole();
                         case 3 -> service.editarFuncionario();
                         case 4 -> service.excluirFuncionario();
-                        case 0 -> System.out.println("🔙 Retornando ao menu principal...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Retornando ao menu principal...");
+                        default -> System.out.println("Opção inválida.");
                     }
 
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida. Digite um número.");
+                    System.out.println("Entrada inválida. Digite um número.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("🚨 Erro no menu de funcionários:");
+            System.out.println("Erro no menu de funcionários:");
             e.printStackTrace();
         }
     }

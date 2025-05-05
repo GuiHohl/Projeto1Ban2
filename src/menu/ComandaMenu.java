@@ -32,18 +32,18 @@ public class ComandaMenu {
                         case 2 -> service.criarComanda();
                         case 3 -> service.cancelarComanda();
                         case 4 -> service.excluirComanda();
-                        case 0 -> System.out.println("🔙 Voltando ao menu principal...");
-                        default -> System.out.println("❌ Opção inválida.");
+                        case 0 -> System.out.println("Voltando ao menu principal...");
+                        default -> System.out.println("Opção inválida.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Entrada inválida. Digite um número.");
+                    System.out.println("Entrada inválida. Digite um número.");
                     opcao = -1;
                 }
 
             } while (opcao != 0);
 
         } catch (Exception e) {
-            System.out.println("❌ Erro no menu de comandas:");
+            System.out.println("Erro no menu de comandas:");
             e.printStackTrace();
         }
     }

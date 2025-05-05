@@ -71,7 +71,7 @@ public class AdicionalService {
             int escolha = Integer.parseInt(scanner.nextLine());
 
             if (escolha < 1 || escolha > lista.size()) {
-                System.out.println("❌ Opção inválida.");
+                System.out.println("Opção inválida.");
                 return;
             }
 

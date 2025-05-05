@@ -14,19 +14,19 @@ public class PedidoDAO {
     }
 
     public int create(PedidoModel pedido) throws Exception {
-        String sql = "INSERT INTO pedidos (id_comanda, data_pedido, status_pedido) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO pedidos (id_comanda, data_pedido, id_status_pedido) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, pedido.getIdComanda());
             stmt.setTimestamp(2, pedido.getDataPedido());
-            stmt.setString(3, pedido.getStatusPedido());
+            stmt.setInt(3, pedido.getIdStatusPedido());
 
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1); // ID do pedido gerado
+                    return rs.getInt(1);
                 } else {
-                    throw new SQLException("❌ Não foi possível recuperar o ID do pedido.");
+                    throw new SQLException("Não foi possível recuperar o ID do pedido.");
                 }
             }
         }
@@ -42,7 +42,7 @@ public class PedidoDAO {
                 pedido.setIdPedido(rs.getInt("id_pedido"));
                 pedido.setIdComanda(rs.getInt("id_comanda"));
                 pedido.setDataPedido(rs.getTimestamp("data_pedido"));
-                pedido.setStatusPedido(rs.getString("status_pedido"));
+                pedido.setIdStatusPedido(rs.getInt("id_status_pedido"));
                 return pedido;
             }
         }
@@ -50,11 +50,11 @@ public class PedidoDAO {
     }
 
     public void update(PedidoModel pedido) throws SQLException {
-        String sql = "UPDATE pedidos SET id_comanda = ?, data_pedido = ?, status_pedido = ? WHERE id_pedido = ?";
+        String sql = "UPDATE pedidos SET id_comanda = ?, data_pedido = ?, id_status_pedido = ? WHERE id_pedido = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, pedido.getIdComanda());
             stmt.setTimestamp(2, pedido.getDataPedido());
-            stmt.setString(3, pedido.getStatusPedido());
+            stmt.setInt(3, pedido.getIdStatusPedido());
             stmt.setInt(4, pedido.getIdPedido());
             stmt.executeUpdate();
         }
@@ -80,7 +80,7 @@ public class PedidoDAO {
                 p.setIdPedido(rs.getInt("id_pedido"));
                 p.setIdComanda(rs.getInt("id_comanda"));
                 p.setDataPedido(rs.getTimestamp("data_pedido"));
-                p.setStatusPedido(rs.getString("status_pedido"));
+                p.setIdStatusPedido(rs.getInt("id_status_pedido"));
                 lista.add(p);
             }
         }

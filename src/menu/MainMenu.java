@@ -35,12 +35,12 @@ public class MainMenu {
                     case 7 -> new AdicionalMenu().exibirMenu();
                     case 8 -> new PedidoMenu().exibirMenu();
                     case 9 -> new RelatorioMenu().exibirMenu();
-                    case 0 -> System.out.println("👋 Encerrando o sistema. Até logo!");
-                    default -> System.out.println("❌ Opção inválida.");
+                    case 0 -> System.out.println("Encerrando o sistema. Até logo!");
+                    default -> System.out.println("Opção inválida.");
                 }
 
             } catch (NumberFormatException e) {
-                System.out.println("❌ Entrada inválida. Digite um número.");
+                System.out.println("Entrada inválida. Digite um número.");
                 opcao = -1;
             }
 

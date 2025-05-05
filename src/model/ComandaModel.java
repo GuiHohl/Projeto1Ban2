@@ -6,7 +6,7 @@ public class ComandaModel {
     private int idComanda;
     private int idFuncionario;
     private Timestamp dataAbertura;
-    private String statusComanda;
+    private int idStatusComanda;
     private int numMesa;
 
     public int getIdComanda() {
@@ -33,12 +33,12 @@ public class ComandaModel {
         this.dataAbertura = dataAbertura;
     }
 
-    public String getStatusComanda() {
-        return statusComanda;
+    public int getIdStatusComanda() {
+        return idStatusComanda;
     }
 
-    public void setStatusComanda(String statusComanda) {
-        this.statusComanda = statusComanda;
+    public void setIdStatusComanda(int idStatusComanda) {
+        this.idStatusComanda = idStatusComanda;
     }
 
     public int getNumMesa() {

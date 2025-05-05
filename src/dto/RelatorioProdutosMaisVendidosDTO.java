@@ -13,7 +13,6 @@ public class RelatorioProdutosMaisVendidosDTO {
         this.faturamento = faturamento;
     }
 
-    // Getters e Setters
     public String getNomeProduto() {
         return nomeProduto;
     }

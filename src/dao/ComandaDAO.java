@@ -14,11 +14,11 @@ public class ComandaDAO {
     }
 
     public void create(ComandaModel comanda) throws SQLException {
-        String sql = "INSERT INTO comanda (id_funcionario, data_abertura, status_comanda, num_mesa) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO comanda (id_funcionario, data_abertura, id_status_comanda, num_mesa) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, comanda.getIdFuncionario());
             stmt.setTimestamp(2, comanda.getDataAbertura());
-            stmt.setString(3, comanda.getStatusComanda());
+            stmt.setInt(3, comanda.getIdStatusComanda());
             stmt.setInt(4, comanda.getNumMesa());
             stmt.executeUpdate();
         }
@@ -34,7 +34,7 @@ public class ComandaDAO {
                 comanda.setIdComanda(rs.getInt("id_comanda"));
                 comanda.setIdFuncionario(rs.getInt("id_funcionario"));
                 comanda.setDataAbertura(rs.getTimestamp("data_abertura"));
-                comanda.setStatusComanda(rs.getString("status_comanda"));
+                comanda.setIdStatusComanda(rs.getInt("id_status_comanda"));
                 comanda.setNumMesa(rs.getInt("num_mesa"));
                 return comanda;
             }
@@ -43,11 +43,11 @@ public class ComandaDAO {
     }
 
     public void update(ComandaModel comanda) throws SQLException {
-        String sql = "UPDATE comanda SET id_funcionario = ?, data_abertura = ?, status_comanda = ?, num_mesa = ? WHERE id_comanda = ?";
+        String sql = "UPDATE comanda SET id_funcionario = ?, data_abertura = ?, id_status_comanda = ?, num_mesa = ? WHERE id_comanda = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, comanda.getIdFuncionario());
             stmt.setTimestamp(2, comanda.getDataAbertura());
-            stmt.setString(3, comanda.getStatusComanda());
+            stmt.setInt(3, comanda.getIdStatusComanda());
             stmt.setInt(4, comanda.getNumMesa());
             stmt.setInt(5, comanda.getIdComanda());
             stmt.executeUpdate();
@@ -74,7 +74,7 @@ public class ComandaDAO {
                 c.setIdComanda(rs.getInt("id_comanda"));
                 c.setIdFuncionario(rs.getInt("id_funcionario"));
                 c.setDataAbertura(rs.getTimestamp("data_abertura"));
-                c.setStatusComanda(rs.getString("status_comanda"));
+                c.setIdStatusComanda(rs.getInt("id_status_comanda"));
                 c.setNumMesa(rs.getInt("num_mesa"));
 
                 lista.add(c);

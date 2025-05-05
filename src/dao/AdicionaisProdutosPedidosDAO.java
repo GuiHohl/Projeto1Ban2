@@ -24,9 +24,9 @@ public class AdicionaisProdutosPedidosDAO {
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1); // ID do adicional_produto_pedido gerado
+                    return rs.getInt(1);
                 } else {
-                    throw new SQLException("❌ Não foi possível recuperar o ID do adicional_produto_pedido.");
+                    throw new SQLException("Não foi possível recuperar o ID do adicional_produto_pedido.");
                 }
             }
         }

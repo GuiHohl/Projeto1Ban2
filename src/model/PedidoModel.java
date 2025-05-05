@@ -6,7 +6,7 @@ public class PedidoModel {
     private int idPedido;
     private int idComanda;
     private Timestamp dataPedido;
-    private String statusPedido;
+    private int idStatusPedido;
 
     public int getIdPedido() {
         return idPedido;
@@ -32,11 +32,11 @@ public class PedidoModel {
         this.dataPedido = dataPedido;
     }
 
-    public String getStatusPedido() {
-        return statusPedido;
+    public int getIdStatusPedido() {
+        return idStatusPedido;
     }
 
-    public void setStatusPedido(String statusPedido) {
-        this.statusPedido = statusPedido;
+    public void setIdStatusPedido(int idStatusPedido) {
+        this.idStatusPedido = idStatusPedido;
     }
 }

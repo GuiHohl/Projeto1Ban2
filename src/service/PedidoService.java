@@ -7,16 +7,18 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Scanner;
 
 public class PedidoService {
-
     private final PedidoDAO pedidoDAO;
     private final ComandaDAO comandaDAO;
     private final ProdutoDAO produtoDAO;
     private final ProdutosPedidosDAO produtosPedidosDAO;
     private final AdicionaisProdutosPedidosDAO adicionaisProdutosPedidosDAO;
     private final AdicionalDAO adicionalDAO;
+    private final StatusPedidoDAO statusPedidoDAO;
 
     public PedidoService(Connection connection) {
         this.pedidoDAO = new PedidoDAO(connection);
@@ -25,16 +27,16 @@ public class PedidoService {
         this.produtosPedidosDAO = new ProdutosPedidosDAO(connection);
         this.adicionaisProdutosPedidosDAO = new AdicionaisProdutosPedidosDAO(connection);
         this.adicionalDAO = new AdicionalDAO(connection);
+        this.statusPedidoDAO = new StatusPedidoDAO(connection);
     }
 
     public void criarPedido() {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Escolher comanda aberta
             List<ComandaModel> comandas = comandaDAO.findAll();
             List<ComandaModel> abertas = comandas.stream()
-                    .filter(c -> c.getStatusComanda().equalsIgnoreCase("Aberta"))
+                    .filter(c -> c.getIdStatusComanda() == 1)
                     .toList();
 
             if (abertas.isEmpty()) {
@@ -56,13 +58,12 @@ public class PedidoService {
 
             ComandaModel comandaSelecionada = abertas.get(escolha - 1);
 
-            // Criar pedido
             PedidoModel pedido = new PedidoModel();
             pedido.setIdComanda(comandaSelecionada.getIdComanda());
             pedido.setDataPedido(Timestamp.valueOf(LocalDateTime.now()));
-            pedido.setStatusPedido("Aberto");
+            pedido.setIdStatusPedido(1);
 
-            int idPedido = pedidoDAO.create(pedido); // retorna ID
+            int idPedido = pedidoDAO.create(pedido);
             pedido.setIdPedido(idPedido);
 
             System.out.println("Pedido criado. Adicione produtos:");
@@ -85,7 +86,6 @@ public class PedidoService {
 
                 ProdutoModel produtoSelecionado = produtos.get(prodIndex);
 
-                // Cria produto_pedido
                 ProdutosPedidosModel produtoPedido = new ProdutosPedidosModel();
                 produtoPedido.setIdPedido(idPedido);
                 produtoPedido.setIdProduto(produtoSelecionado.getIdProduto());
@@ -93,7 +93,6 @@ public class PedidoService {
                 int idProdutoPedido = produtosPedidosDAO.create(produtoPedido);
                 produtoPedido.setIdProdutoPedido(idProdutoPedido);
 
-                // Adicionais
                 System.out.print("Deseja adicionar adicionais para este produto? (s/n): ");
                 if (scanner.nextLine().equalsIgnoreCase("s")) {
                     List<AdicionalModel> adicionais = adicionalDAO.findAll();
@@ -137,86 +136,26 @@ public class PedidoService {
         }
     }
 
-    public void alterarStatusPedido() {
-        Scanner scanner = new Scanner(System.in);
+    public void listarPedidos() {
         try {
             List<PedidoModel> pedidos = pedidoDAO.findAll();
-            if (pedidos.isEmpty()) {
-                System.out.println("Nenhum pedido encontrado.");
-                return;
-            }
+            List<StatusPedidoModel> statusList = statusPedidoDAO.findAll();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-            System.out.println("\nSelecione o pedido para alterar o status:");
-            for (int i = 0; i < pedidos.size(); i++) {
-                PedidoModel p = pedidos.get(i);
-                System.out.printf("%d - Pedido #%d | Status: %s%n", i + 1, p.getIdPedido(), p.getStatusPedido());
-            }
-
-            int escolha = Integer.parseInt(scanner.nextLine());
-            if (escolha < 1 || escolha > pedidos.size()) {
-                System.out.println("Escolha inválida.");
-                return;
-            }
-
-            PedidoModel pedido = pedidos.get(escolha - 1);
-
-            System.out.print("Novo status para o pedido: ");
-            String novoStatus = scanner.nextLine();
-
-            // Atualiza apenas o status, mantendo os outros dados do pedido
-            pedido.setStatusPedido(novoStatus);
-            pedidoDAO.update(pedido);
-
-            System.out.println("Status do pedido atualizado com sucesso!");
-
-        } catch (Exception e) {
-            System.out.println("Erro ao alterar status:");
-            e.printStackTrace();
-        }
-    }
-
-
-    public void excluirPedido() {
-        Scanner scanner = new Scanner(System.in);
-        try {
-            List<PedidoModel> pedidos = pedidoDAO.findAll();
-            if (pedidos.isEmpty()) {
-                System.out.println("Nenhum pedido para excluir.");
-                return;
-            }
-
-            System.out.println("\nSelecione o pedido para excluir:");
-            for (int i = 0; i < pedidos.size(); i++) {
-                PedidoModel p = pedidos.get(i);
-                System.out.printf("%d - Pedido #%d | Status: %s%n", i + 1, p.getIdPedido(), p.getStatusPedido());
-            }
-
-            int escolha = Integer.parseInt(scanner.nextLine());
-            if (escolha < 1 || escolha > pedidos.size()) {
-                System.out.println("Escolha inválida.");
-                return;
-            }
-
-            PedidoModel pedido = pedidos.get(escolha - 1);
-
-            pedidoDAO.delete(pedido.getIdPedido());
-            System.out.println("Pedido removido com sucesso!");
-
-        } catch (Exception e) {
-            System.out.println("Erro ao excluir pedido:");
-            e.printStackTrace();
-        }
-    }
-
-    public void listarPedidosDetalhado() {
-        try {
-            List<PedidoModel> pedidos = pedidoDAO.findAll();
             for (PedidoModel pedido : pedidos) {
+                String statusNome = statusList.stream()
+                        .filter(s -> s.getId() == pedido.getIdStatusPedido())
+                        .map(StatusPedidoModel::getNome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+
+                String dataFormatada = pedido.getDataPedido().toLocalDateTime().format(formatter);
+
                 System.out.printf("\nPedido #%d | Comanda: %d | Status: %s | Data: %s%n",
                         pedido.getIdPedido(),
                         pedido.getIdComanda(),
-                        pedido.getStatusPedido(),
-                        pedido.getDataPedido());
+                        statusNome,
+                        dataFormatada);
 
                 List<ProdutosPedidosModel> produtos = produtosPedidosDAO.findByPedidoId(pedido.getIdPedido());
                 BigDecimal totalPedido = BigDecimal.ZERO;
@@ -246,6 +185,82 @@ public class PedidoService {
 
         } catch (Exception e) {
             System.out.println("Erro ao listar pedidos:");
+            e.printStackTrace();
+        }
+    }
+
+    public void alterarStatusPedido() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            List<PedidoModel> lista = pedidoDAO.findAll();
+            List<StatusPedidoModel> statusList = statusPedidoDAO.findAll();
+
+            if (lista.isEmpty()) {
+                System.out.println("Nenhum pedido para atualizar.");
+                return;
+            }
+
+            System.out.println("Selecione o pedido para alterar o status:");
+            for (int i = 0; i < lista.size(); i++) {
+                PedidoModel p = lista.get(i);
+                String nomeStatus = statusList.stream()
+                        .filter(s -> s.getId() == p.getIdStatusPedido())
+                        .map(StatusPedidoModel::getNome)
+                        .findFirst()
+                        .orElse("Desconhecido");
+
+                System.out.printf("%d - Pedido #%d | Status atual: %s%n", i + 1, p.getIdPedido(), nomeStatus);
+            }
+
+            int escolha = Integer.parseInt(scanner.nextLine());
+            if (escolha < 1 || escolha > lista.size()) {
+                System.out.println("Opção inválida.");
+                return;
+            }
+
+            PedidoModel pedido = lista.get(escolha - 1);
+
+            System.out.println("Selecione o novo status:");
+            for (StatusPedidoModel status : statusList) {
+                System.out.printf("%d - %s%n", status.getId(), status.getNome());
+            }
+            int novoStatus = Integer.parseInt(scanner.nextLine());
+            pedido.setIdStatusPedido(novoStatus);
+
+            pedidoDAO.update(pedido);
+            System.out.println("Status atualizado com sucesso.");
+        } catch (Exception e) {
+            System.out.println("Erro ao alterar status do pedido:");
+            e.printStackTrace();
+        }
+    }
+
+    public void excluirPedido() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            List<PedidoModel> lista = pedidoDAO.findAll();
+            if (lista.isEmpty()) {
+                System.out.println("Nenhum pedido para excluir.");
+                return;
+            }
+
+            System.out.println("Selecione o pedido para exclusão:");
+            for (int i = 0; i < lista.size(); i++) {
+                PedidoModel p = lista.get(i);
+                System.out.printf("%d - Pedido #%d (Comanda: %d)%n", i + 1, p.getIdPedido(), p.getIdComanda());
+            }
+
+            int escolha = Integer.parseInt(scanner.nextLine());
+            if (escolha < 1 || escolha > lista.size()) {
+                System.out.println("Opção inválida.");
+                return;
+            }
+
+            int idPedido = lista.get(escolha - 1).getIdPedido();
+            pedidoDAO.delete(idPedido);
+            System.out.println("Pedido excluído com sucesso.");
+        } catch (Exception e) {
+            System.out.println("Erro ao excluir pedido:");
             e.printStackTrace();
         }
     }

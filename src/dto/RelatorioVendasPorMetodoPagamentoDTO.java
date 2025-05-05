@@ -13,7 +13,6 @@ public class RelatorioVendasPorMetodoPagamentoDTO {
         this.totalVendas = totalVendas;
     }
 
-    // Getters e Setters
     public String getMetodoPagamento() {
         return metodoPagamento;
     }
@@ -43,4 +42,3 @@ public class RelatorioVendasPorMetodoPagamentoDTO {
         return String.format("Método: %s | Total Pagamentos: %d | Total Vendas: R$ %.2f", metodoPagamento, totalPagamentos, totalVendas);
     }
 }
-
