@@ -1,4 +1,4 @@
-**INSTRUÇÕES PARA COMPILAÇÃO E EXECUÇÃO DO SISTEMA DE GERENCIAMENTO DE RESTAURANTE**
+# **INSTRUÇÕES PARA COMPILAÇÃO E EXECUÇÃO DO SISTEMA DE GERENCIAMENTO DE RESTAURANTE**
 
 Este sistema foi desenvolvido em Java com acesso a banco de dados PostgreSQL, utilizando JDBC e interface de texto via console. Abaixo estão as etapas necessárias para compilar e executar o projeto localmente.
 
