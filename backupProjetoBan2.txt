@@ -1,0 +1,232 @@
+-- SEQUENCES (todas iniciando em 1000)
+CREATE SEQUENCE seq_cargos START 1000;
+CREATE SEQUENCE seq_funcionarios START 1000;
+CREATE SEQUENCE seq_comanda START 1000;
+CREATE SEQUENCE seq_categorias START 1000;
+CREATE SEQUENCE seq_produtos START 1000;
+CREATE SEQUENCE seq_adicionais START 1000;
+CREATE SEQUENCE seq_pedidos START 1000;
+CREATE SEQUENCE seq_pagamentos START 1000;
+CREATE SEQUENCE seq_produtos_pedidos START 1000;
+CREATE SEQUENCE seq_adicionais_produtos_pedidos START 1000;
+CREATE SEQUENCE seq_status_comanda START 1000;
+CREATE SEQUENCE seq_status_pedido START 1000;
+CREATE SEQUENCE seq_metodos_pagamento START 1000;
+
+-- TABELAS DE APOIO
+
+CREATE TABLE status_comanda (
+    id_status_comanda INT PRIMARY KEY DEFAULT nextval('seq_status_comanda'),
+    nome VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE status_pedido (
+    id_status_pedido INT PRIMARY KEY DEFAULT nextval('seq_status_pedido'),
+    nome VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE metodos_pagamento (
+    id_metodo_pagamento INT PRIMARY KEY DEFAULT nextval('seq_metodos_pagamento'),
+    nome VARCHAR(100) NOT NULL
+);
+
+-- TABELAS PRINCIPAIS
+
+CREATE TABLE cargos (
+    id_cargo INT PRIMARY KEY DEFAULT nextval('seq_cargos'),
+    nome VARCHAR(255)
+);
+
+CREATE TABLE funcionarios (
+    id_funcionario INT PRIMARY KEY DEFAULT nextval('seq_funcionarios'),
+    nome VARCHAR(255),
+    id_cargo INT,
+    FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo)
+);
+
+CREATE TABLE comanda (
+    id_comanda INT PRIMARY KEY DEFAULT nextval('seq_comanda'),
+    id_funcionario INT,
+    data_abertura TIMESTAMP,
+    id_status_comanda INT,
+    num_mesa INT,
+    FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id_funcionario),
+    FOREIGN KEY (id_status_comanda) REFERENCES status_comanda(id_status_comanda)
+);
+
+CREATE TABLE categorias (
+    id_categoria INT PRIMARY KEY DEFAULT nextval('seq_categorias'),
+    nome VARCHAR(50)
+);
+
+CREATE TABLE produtos (
+    id_produto INT PRIMARY KEY DEFAULT nextval('seq_produtos'),
+    id_categoria INT,
+    nome VARCHAR(255),
+    descrição TEXT,
+    preco DECIMAL(8,2),
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
+);
+
+CREATE TABLE adicionais (
+    id_adicional INT PRIMARY KEY DEFAULT nextval('seq_adicionais'),
+    nome VARCHAR(100),
+    preco DECIMAL(8,2)
+);
+
+CREATE TABLE pedidos (
+    id_pedido INT PRIMARY KEY DEFAULT nextval('seq_pedidos'),
+    id_comanda INT,
+    data_pedido TIMESTAMP,
+    id_status_pedido INT,
+    FOREIGN KEY (id_comanda) REFERENCES comanda(id_comanda),
+    FOREIGN KEY (id_status_pedido) REFERENCES status_pedido(id_status_pedido)
+);
+
+CREATE TABLE pagamentos (
+    id_pagamento INT PRIMARY KEY DEFAULT nextval('seq_pagamentos'),
+    id_comanda INT,
+    valor DECIMAL(10,2),
+    id_metodo_pagamento INT,
+    data_pagamento TIMESTAMP,
+    FOREIGN KEY (id_comanda) REFERENCES comanda(id_comanda),
+    FOREIGN KEY (id_metodo_pagamento) REFERENCES metodos_pagamento(id_metodo_pagamento)
+);
+
+-- TABELAS RELACIONAIS
+
+CREATE TABLE produtos_pedidos (
+    id_produto_pedido INT PRIMARY KEY DEFAULT nextval('seq_produtos_pedidos'),
+    id_pedido INT,
+    id_produto INT,
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
+    FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+CREATE TABLE adicionais_produtos_pedidos (
+    id_adicional_produto_pedido INT PRIMARY KEY DEFAULT nextval('seq_adicionais_produtos_pedidos'),
+    id_produto_pedido INT,
+    id_adicional INT,
+    qtd_adicional INT,
+    FOREIGN KEY (id_produto_pedido) REFERENCES produtos_pedidos(id_produto_pedido) ON DELETE CASCADE,
+    FOREIGN KEY (id_adicional) REFERENCES adicionais(id_adicional)
+);
+
+-- CARGOS
+INSERT INTO cargos (id_cargo, nome) VALUES
+(1, 'Garçom'),
+(2, 'Cozinheiro'),
+(3, 'Gerente'),
+(4, 'Caixa'),
+(5, 'Auxiliar de Limpeza');
+
+-- FUNCIONÁRIOS
+INSERT INTO funcionarios (id_funcionario, nome, id_cargo) VALUES
+(1, 'João Silva', 1),
+(2, 'Maria Souza', 2),
+(3, 'Carlos Lima', 3),
+(4, 'Ana Ferreira', 4),
+(5, 'Pedro Santos', 1);
+
+-- STATUS COMANDA
+INSERT INTO status_comanda (id_status_comanda, nome) VALUES
+(1, 'Aberta'),
+(2, 'Fechada'),
+(3, 'Cancelada');
+
+-- STATUS PEDIDO
+INSERT INTO status_pedido (id_status_pedido, nome) VALUES
+(1, 'Em preparo'),
+(2, 'Pronto'),
+(3, 'Cancelado');
+
+-- MÉTODOS DE PAGAMENTO
+INSERT INTO metodos_pagamento (id_metodo_pagamento, nome) VALUES
+(1, 'Dinheiro'),
+(2, 'Cartão de Crédito'),
+(3, 'Pix'),
+(4, 'Cartão de Débito'),
+(5, 'Vale-refeição');
+
+-- CATEGORIAS
+INSERT INTO categorias (id_categoria, nome) VALUES
+(1, 'Massas'),
+(2, 'Bebidas'),
+(3, 'Sobremesas'),
+(4, 'Lanches');
+
+-- PRODUTOS
+INSERT INTO produtos (id_produto, id_categoria, nome, descrição, preco) VALUES
+(1, 1, 'Pizza Margherita', 'Molho de tomate, mussarela e manjericão', 40.00),
+(2, 1, 'Espaguete à Bolonhesa', 'Massa com molho de carne', 35.00),
+(3, 2, 'Coca-Cola 600ml', 'Refrigerante gelado', 7.50),
+(4, 2, 'Suco de Laranja', 'Suco natural', 6.00),
+(5, 3, 'Pudim de Leite', 'Sobremesa tradicional', 9.90),
+(6, 4, 'X-Burger', 'Pão, hambúrguer e queijo', 18.00);
+
+-- ADICIONAIS
+INSERT INTO adicionais (id_adicional, nome, preco) VALUES
+(1, 'Queijo extra', 5.00),
+(2, 'Bacon', 6.00),
+(3, 'Molho picante', 2.50),
+(4, 'Batata palha', 3.00),
+(5, 'Maionese da casa', 3.50),
+(6, 'Cebola caramelizada', 4.00);
+
+-- COMANDAS
+INSERT INTO comanda (id_comanda, id_funcionario, data_abertura, id_status_comanda, num_mesa) VALUES
+(1, 1, NOW() - INTERVAL '24 hours', 1, 10),
+(2, 3, NOW() - INTERVAL '24 hours', 2, 8),
+(3, 2, NOW() - INTERVAL '24 hours', 3, 12),
+(4, 4, NOW() - INTERVAL '24 hours', 1, 15),
+(5, 5, NOW() - INTERVAL '24 hours', 2, 6),
+(6, 1, NOW() - INTERVAL '24 hours', 1, 9),
+(7, 2, NOW() - INTERVAL '2 hours', 1, 14),
+(8, 3, NOW() - INTERVAL '2 hours', 1, 5),
+(9, 2, NOW() - INTERVAL '2 hours', 2, 3),
+(10, 3, NOW() - INTERVAL '2 hours', 2, 4),
+(11, 4, NOW() - INTERVAL '2 hours', 2, 7),
+(12, 1, NOW() - INTERVAL '2 hours', 1, 13),
+(13, 5, NOW() - INTERVAL '2 hours', 1, 11);
+
+-- PEDIDOS
+INSERT INTO pedidos (id_pedido, id_comanda, data_pedido, id_status_pedido) VALUES
+(1, 1, NOW() - INTERVAL '24 hours', 1),
+(2, 2, NOW() - INTERVAL '24 hours', 2),
+(3, 3, NOW() - INTERVAL '24 hours', 3),
+(4, 4, NOW() - INTERVAL '24 minutes', 1),
+(5, 5, NOW() - INTERVAL '24 hours', 2),
+(6, 6, NOW() - INTERVAL '24 minutes', 1),
+(7, 7, NOW() - INTERVAL '2 minutes', 1),
+(8, 8, NOW() - INTERVAL '2 minutes', 1),
+(9, 9, NOW() - INTERVAL '2 hours', 2),
+(10, 10, NOW() - INTERVAL '2 hours', 2),
+(11, 11, NOW() - INTERVAL '2 hours', 2),
+(12, 12, NOW() - INTERVAL '2 hours', 1),
+(13, 13, NOW() - INTERVAL '2 hours', 1);
+
+-- PAGAMENTOS
+INSERT INTO pagamentos (id_pagamento, id_comanda, valor, id_metodo_pagamento, data_pagamento) VALUES
+(1, 2, 49.90, 3, NOW() - INTERVAL '24 hours'),
+(2, 3, 27.00, 1, NOW() - INTERVAL '24 hours'),
+(3, 5, 43.00, 5, NOW() - INTERVAL '24 hours'),
+(4, 6, 58.00, 2, NOW() - INTERVAL '2 minutes'),
+(5, 9, 60.00, 1, NOW() - INTERVAL '2 hours'),
+(6, 10, 85.00, 3, NOW() - INTERVAL '2 hours'),
+(7, 11, 47.50, 4, NOW() - INTERVAL '2 hours');
+
+-- PRODUTOS_PEDIDOS
+INSERT INTO produtos_pedidos (id_produto_pedido, id_pedido, id_produto) VALUES
+(1, 1, 1), (2, 1, 3), (3, 2, 2), (4, 4, 6),
+(5, 5, 4), (6, 5, 5), (7, 6, 6), (8, 6, 3),
+(9, 7, 1), (10, 8, 2), (11, 9, 2), (12, 9, 3),
+(13, 10, 4), (14, 11, 6), (15, 12, 1),
+(16, 13, 5), (17, 13, 2);
+
+-- ADICIONAIS_PRODUTOS_PEDIDOS
+INSERT INTO adicionais_produtos_pedidos (id_adicional_produto_pedido, id_produto_pedido, id_adicional, qtd_adicional) VALUES
+(1, 1, 1, 1), (2, 3, 2, 2), (3, 4, 4, 1),
+(4, 5, 5, 1), (5, 6, 2, 1), (6, 7, 6, 2),
+(7, 9, 3, 1), (8, 10, 1, 1), (9, 11, 1, 1),
+(10, 12, 2, 1), (11, 14, 5, 1), (12, 15, 3, 2),
+(13, 16, 6, 1), (14, 17, 1, 2);
