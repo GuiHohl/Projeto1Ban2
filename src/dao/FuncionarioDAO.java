@@ -83,11 +83,12 @@ public class FuncionarioDAO {
     public List<RelatorioFuncionariosComMaisComandasDTO> findFuncionariosComMaisComandas() throws Exception {
         List<RelatorioFuncionariosComMaisComandasDTO> lista = new ArrayList<>();
         String sql = """
-        SELECT f.nome, COUNT(c.id_comanda) AS total_comandas
-        FROM funcionarios f
-        JOIN comanda c ON c.id_funcionario = f.id_funcionario
-        GROUP BY f.nome
-        ORDER BY total_comandas DESC;
+            SELECT f.nome AS nome, cg.nome AS cargo, COUNT(cm.id_comanda) AS total_comandas
+            FROM funcionarios f
+            JOIN cargos cg ON f.id_cargo = cg.id_cargo
+            JOIN comanda cm ON cm.id_funcionario = f.id_funcionario
+            GROUP BY f.nome, cg.nome
+            ORDER BY total_comandas DESC;
         """;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
@@ -96,6 +97,7 @@ public class FuncionarioDAO {
             while (rs.next()) {
                 RelatorioFuncionariosComMaisComandasDTO dto = new RelatorioFuncionariosComMaisComandasDTO(
                     rs.getString("nome"),
+                    rs.getString("cargo"),
                     rs.getInt("total_comandas")
                 );
                 lista.add(dto);

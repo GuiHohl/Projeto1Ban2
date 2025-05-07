@@ -2,10 +2,12 @@ package dto;
 
 public class RelatorioFuncionariosComMaisComandasDTO {
     private String nomeFuncionario;
+    private String cargoFuncionario;
     private int totalComandas;
 
-    public RelatorioFuncionariosComMaisComandasDTO(String nomeFuncionario, int totalComandas) {
+    public RelatorioFuncionariosComMaisComandasDTO(String nomeFuncionario, String cargoFuncionario, int totalComandas) {
         this.nomeFuncionario = nomeFuncionario;
+        this.cargoFuncionario = cargoFuncionario;
         this.totalComandas = totalComandas;
     }
 
@@ -15,6 +17,14 @@ public class RelatorioFuncionariosComMaisComandasDTO {
 
     public void setNomeFuncionario(String nomeFuncionario) {
         this.nomeFuncionario = nomeFuncionario;
+    }
+
+    public String getCargoFuncionario() {
+        return cargoFuncionario;
+    }
+
+    public void setCargoFuncionario(String cargoFuncionario) {
+        this.cargoFuncionario = cargoFuncionario;
     }
 
     public int getTotalComandas() {
@@ -27,7 +37,7 @@ public class RelatorioFuncionariosComMaisComandasDTO {
 
     @Override
     public String toString() {
-        return String.format("Funcionário: %s | Comandas Atendidas: %d", nomeFuncionario, totalComandas);
+        return String.format("Funcionário: %s | Cargo: %s | Comandas Atendidas: %d", nomeFuncionario, cargoFuncionario, totalComandas);
     }
 }
 

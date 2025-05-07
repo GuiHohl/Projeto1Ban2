@@ -115,9 +115,12 @@ public class PagamentoDAO {
     public List<RelatorioVendasPorMetodoPagamentoDTO> findVendasPorMetodo() throws Exception {
         List<RelatorioVendasPorMetodoPagamentoDTO> lista = new ArrayList<>();
         String sql = """
-            SELECT id_metodo_pagamento, COUNT(*) AS total_pagamentos, SUM(valor) AS total_vendas
-            FROM pagamentos
-            GROUP BY id_metodo_pagamento
+            SELECT mp.nome AS metodo_nome,
+                   COUNT(p.id_pagamento) AS total_pagamentos,
+                   SUM(p.valor) AS total_vendas
+            FROM pagamentos p
+            JOIN metodos_pagamento mp ON p.id_metodo_pagamento = mp.id_metodo_pagamento
+            GROUP BY mp.nome
             ORDER BY total_vendas DESC;
         """;
 
@@ -126,7 +129,7 @@ public class PagamentoDAO {
 
             while (rs.next()) {
                 RelatorioVendasPorMetodoPagamentoDTO dto = new RelatorioVendasPorMetodoPagamentoDTO(
-                        String.valueOf(rs.getInt("id_metodo_pagamento")),
+                        rs.getString("metodo_nome"),
                         rs.getInt("total_pagamentos"),
                         rs.getBigDecimal("total_vendas")
                 );

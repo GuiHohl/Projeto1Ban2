@@ -65,17 +65,11 @@ public class RelatorioService {
             List<MetodoPagamentoModel> metodos = metodoPagamentoDAO.findAll();
 
             System.out.println("\nRelatório de Vendas por Método de Pagamento:");
-            System.out.printf("%-20s %-15s %-15s%n", "Método", "Total Pagamentos", "Total Faturamento");
+            System.out.printf("%-20s %-15s %-15s%n", "Método", "Pagamentos", "Total Faturamento");
 
             for (RelatorioVendasPorMetodoPagamentoDTO dto : relatorio) {
-                String nomeMetodo = metodos.stream()
-                        .filter(m -> String.valueOf(m.getId()).equals(dto.getMetodoPagamento()))
-                        .map(MetodoPagamentoModel::getNome)
-                        .findFirst()
-                        .orElse("Desconhecido");
-
                 System.out.printf("%-20s %-15d R$ %-13.2f%n",
-                        nomeMetodo,
+                        dto.getMetodoPagamento(),
                         dto.getTotalPagamentos(),
                         dto.getTotalVendas());
             }
@@ -90,7 +84,7 @@ public class RelatorioService {
             List<RelatorioFuncionariosComMaisComandasDTO> relatorio = funcionarioDAO.findFuncionariosComMaisComandas();
 
             System.out.println("\nRelatório de Funcionários com Mais Comandas Atendidas:");
-            System.out.printf("%-30s %-15s%n", "Funcionário", "Comandas Atendidas");
+            System.out.printf("%-30s %-15s %-15s%n", "Funcionário", "Cargo", "Comandas Atendidas");
 
             for (RelatorioFuncionariosComMaisComandasDTO dto : relatorio) {
                 System.out.println(dto);
